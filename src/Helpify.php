@@ -2,7 +2,9 @@
 
 namespace Piscarocarlos\Helpify;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class Helpify
 {
@@ -198,5 +200,207 @@ class Helpify
         }
 
         return null;
+    }
+
+    /**
+     * Generates an HTML tag with attributes.
+     *
+     * @param string $tag       The tag name.
+     * @param array  $attributes The attributes of the tag (optional).
+     * @param string $content    The content of the tag (optional).
+     *
+     * @return string The generated HTML tag.
+     */
+    function htmlTag($tag, $attributes = [], $content = '')
+    {
+        $attributesStr = '';
+        foreach ($attributes as $name => $value) {
+            $attributesStr .= " $name=\"$value\"";
+        }
+
+        return "<$tag$attributesStr>$content</$tag>";
+    }
+
+    /**
+     * Formats a date in the specified format.
+     *
+     * @param string            $format The date format (e.g., 'Y-m-d H:i:s').
+     * @param DateTimeInterface $date   The DateTime object to format.
+     *
+     * @return string The formatted date.
+     */
+    function formatDate($format, \DateTimeInterface $date)
+    {
+        return $date->format($format);
+    }
+
+
+    /**
+     * Truncates a string to a specified length.
+     *
+     * @param string $string   The string to truncate.
+     * @param int    $length   The desired length.
+     *
+     * @return string The truncated string.
+     */
+    function truncateString($string, $length)
+    {
+        return mb_strimwidth($string, 0, $length, '...');
+    }
+
+    /**
+     * Generates a URL-friendly slug from a given string.
+     *
+     * @param string $string The string to convert to a slug.
+     *
+     * @return string The generated slug.
+     */
+    function generateSlug($string)
+    {
+        $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9-]+/', '-', $string), '-'));
+        return preg_replace('/-+/', '-', $slug);
+    }
+
+
+    /**
+     * Generates a random string of a specified length.
+     *
+     * @param int $length The length of the random string.
+     *
+     * @return string The generated random string.
+     */
+    function generateRandomString($length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $randomString;
+    }
+
+
+    /**
+     * Plucks a specific key from each element of an array.
+     *
+     * @param array  $array The array to pluck from.
+     * @param string $key   The key to pluck.
+     *
+     * @return array The array of plucked values.
+     */
+    function arrayPluck($array, $key)
+    {
+        return array_map(function ($item) use ($key) {
+            return is_object($item) ? $item->$key : $item[$key];
+        }, $array);
+    }
+
+
+    /**
+     * Converts a string to camel case.
+     *
+     * @param string $string The string to convert.
+     *
+     * @return string The camel case version of the string.
+     */
+    function toCamelCase($string)
+    {
+        $string = ucwords(str_replace(['-', '_'], ' ', $string));
+        return lcfirst(str_replace(' ', '', $string));
+    }
+
+
+    /**
+     * Flattens a multi-dimensional array into a single level.
+     *
+     * @param array $array The array to flatten.
+     *
+     * @return array The flattened array.
+     */
+    function arrayFlatten($array)
+    {
+        $result = [];
+        array_walk_recursive($array, function ($value) use (&$result) {
+            $result[] = $value;
+        });
+        return $result;
+    }
+
+
+    /**
+     * Generates an HTML link with the target attribute set for external links.
+     *
+     * @param string $url The URL of the link.
+     * @param string $text The anchor text of the link.
+     *
+     * @return string The HTML link.
+     */
+    function externalLink($url, $text)
+    {
+        $target = parse_url($url, PHP_URL_HOST) != $_SERVER['HTTP_HOST'] ? 'target="_blank"' : '';
+        return "<a href=\"$url\" $target>$text</a>";
+    }
+
+
+    /**
+     * Shuffles an array using a seeded random number generator.
+     *
+     * @param array $array The array to shuffle.
+     *
+     * @return array The shuffled array.
+     */
+    function seededShuffle($array)
+    {
+        srand(42); // Seed for reproducibility
+        shuffle($array);
+        return $array;
+    }
+
+
+    /**
+     * Generates a slug for a Laravel model instance.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model The Eloquent model instance.
+     * @param string                             $field The field to use for generating the slug.
+     *
+     * @return string The generated slug.
+     */
+    function generateModelSlug($model, $field = 'name')
+    {
+        return Str::slug($model->$field);
+    }
+
+    /**
+     * Add or update a key-value pair in the .env file.
+     *
+     * @param string $key   The key to add or update.
+     * @param string $value The value to set for the key.
+     *
+     * @return void
+     */
+    function writeToEnvFile($key, $value)
+    {
+        $envFilePath = base_path('.env');
+
+        // Read the existing content of the .env file
+        $currentEnvContent = file_get_contents($envFilePath);
+
+        // Check if the key already exists in the .env file
+        if (strpos($currentEnvContent, "$key=") !== false) {
+            // Update the existing value
+            $updatedEnvContent = preg_replace("/$key=(.*)/", "$key=$value", $currentEnvContent);
+        } else {
+            // Add a new key-value pair
+            $updatedEnvContent = "$currentEnvContent\n$key=$value";
+        }
+
+        // Write the updated content back to the .env file
+        file_put_contents($envFilePath, $updatedEnvContent);
+
+        // Clear the Laravel configuration cache
+        // (optional, but may be needed to reflect changes)
+        Artisan::call('config:clear');
     }
 }
