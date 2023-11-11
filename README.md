@@ -23,6 +23,22 @@ You can install the package via composer:
 composer require piscarocarlos/helpify
 ```
 
+And then, if using Laravel 5, include the service provider within `config/app.php`.
+
+```php
+'providers' => [
+    Piscarocarlos\Helpify\HelpifyServiceProvider::class,
+];
+```
+
+And, for convenience, add a facade alias to this same file at the bottom:
+
+```php
+'aliases' => [
+    'Helpify' => Piscarocarlos\Helpify\Facades\Helpify::class,
+];
+```
+
 ## Usage
 
 ```php
