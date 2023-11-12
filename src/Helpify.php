@@ -380,7 +380,7 @@ class Helpify
      *
      * @return void
      */
-    function writeToEnvFile($key, $value)
+    function writeToEnvFile($key, $value): void
     {
         $envFilePath = base_path('.env');
 
@@ -401,6 +401,22 @@ class Helpify
 
         // Clear the Laravel configuration cache
         // (optional, but may be needed to reflect changes)
+        Artisan::call('config:clear');
+    }
+
+    /**
+     *  add a new line to the .env file.
+     *  @param string $key   The key to add or update.
+     * @param string $value The value to set for the key.
+     * @return void
+     *
+     */
+    public function addNewLineToEnvFile($key, $value): void
+    {
+        $envFilePath = base_path('.env');
+        $currentEnvContent = file_get_contents($envFilePath);
+        $updatedEnvContent = "$currentEnvContent\n$key=$value";
+        file_put_contents($envFilePath, $updatedEnvContent);
         Artisan::call('config:clear');
     }
 }
