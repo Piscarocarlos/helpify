@@ -40,7 +40,12 @@ And, for convenience, add a facade alias to this same file at the bottom:
 ## Usage
 
 ```php
-Helpify::short_url($url); // output the short url 
+use Helpify\Helpers;
+
+$url = 'https://www.example.com';
+$shortenedURL = short_url($url);
+// OR
+$shortenedURL = Helpers::short_url($url);
 ```
 
 ## Testing
