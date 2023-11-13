@@ -33,7 +33,10 @@
         "psr-4": {
             "Piscarocarlos\\Helpify\\": "src/",
             "Piscarocarlos\\Helpify\\Database\\Factories\\": "database/factories/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

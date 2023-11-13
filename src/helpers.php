@@ -1,20 +1,17 @@
 <?php
 
-namespace Piscarocarlos\Helpify;
-
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
-class Helpify
-{
-    /**
+
+/**
      * Shortens a given URL.
      *
      * @param string $url The URL to shorten.
      * @return string The shortened URL.
      */
-    public function short_url(string $url): string
+     function short_url(string $url): string
     {
         $contextOptions = [
             "ssl" => [
@@ -34,7 +31,7 @@ class Helpify
      * @param string $ip The IP address to check.
      * @return bool True if the IP address is valid, false otherwise.
      */
-    public function checkValidIpAddress($ip)
+     function checkValidIpAddress($ip)
     {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
             return false;
@@ -50,10 +47,10 @@ class Helpify
      *
      * @return string The client's IP address.
      */
-    public function getClientIp(): string
+     function getClientIp(): string
     {
         $ipAddress = '';
-        if (!empty($_SERVER['HTTP_CLIENT_IP']) && $this->checkValidIpAddress($_SERVER['HTTP_CLIENT_IP'])) {
+        if (!empty($_SERVER['HTTP_CLIENT_IP']) && checkValidIpAddress($_SERVER['HTTP_CLIENT_IP'])) {
             // check for shared ISP IP
             $ipAddress = $_SERVER['HTTP_CLIENT_IP'];
         } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -61,20 +58,20 @@ class Helpify
             // check if multiple IP addresses are set and take the first one
             $ipAddressList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
             foreach ($ipAddressList as $ip) {
-                if ($this->checkValidIpAddress($ip)) {
+                if (checkValidIpAddress($ip)) {
                     $ipAddress = $ip;
                     break;
                 }
             }
-        } else if (!empty($_SERVER['HTTP_X_FORWARDED']) && $this->checkValidIpAddress($_SERVER['HTTP_X_FORWARDED'])) {
+        } else if (!empty($_SERVER['HTTP_X_FORWARDED']) && checkValidIpAddress($_SERVER['HTTP_X_FORWARDED'])) {
             $ipAddress = $_SERVER['HTTP_X_FORWARDED'];
-        } else if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && $this->checkValidIpAddress($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])) {
+        } else if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && checkValidIpAddress($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])) {
             $ipAddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
-        } else if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && $this->checkValidIpAddress($_SERVER['HTTP_FORWARDED_FOR'])) {
+        } else if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && checkValidIpAddress($_SERVER['HTTP_FORWARDED_FOR'])) {
             $ipAddress = $_SERVER['HTTP_FORWARDED_FOR'];
-        } else if (!empty($_SERVER['HTTP_FORWARDED']) && $this->checkValidIpAddress($_SERVER['HTTP_FORWARDED'])) {
+        } else if (!empty($_SERVER['HTTP_FORWARDED']) && checkValidIpAddress($_SERVER['HTTP_FORWARDED'])) {
             $ipAddress = $_SERVER['HTTP_FORWARDED'];
-        } else if (!empty($_SERVER['REMOTE_ADDR']) && $this->checkValidIpAddress($_SERVER['REMOTE_ADDR'])) {
+        } else if (!empty($_SERVER['REMOTE_ADDR']) && checkValidIpAddress($_SERVER['REMOTE_ADDR'])) {
             $ipAddress = $_SERVER['REMOTE_ADDR'];
         }
         return $ipAddress;
@@ -85,7 +82,7 @@ class Helpify
      *
      * @return string The client's browser.
      */
-    public function getClientBrowser(): string
+     function getClientBrowser(): string
     {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
@@ -113,7 +110,7 @@ class Helpify
      *
      * @return string The client's operating system.
      */
-    public function getClientOs(): string
+     function getClientOs(): string
     {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
@@ -135,7 +132,7 @@ class Helpify
      *
      * @return string The client's device.
      */
-    public function getClientDevice(): string
+     function getClientDevice(): string
     {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
@@ -165,9 +162,9 @@ class Helpify
      *
      * @return string The client's country.
      */
-    public function getClientCountry(): string
+     function getClientCountry(): string
     {
-        $ipAddress = $this->getClientIp();
+        $ipAddress = getClientIp();
 
         $country = 'UNKNOWN';
 
@@ -191,7 +188,7 @@ class Helpify
      *
      * @return string|null The output class if the current route matches any of the provided routes, otherwise null.
      */
-    public function activeClass(array $routes, $output = "active"): ?string
+     function activeClass(array $routes, $output = "active"): ?string
     {
         foreach ($routes as $route) {
             if (Route::currentRouteName() == $route) {
@@ -411,7 +408,7 @@ class Helpify
      * @return void
      *
      */
-    public function addNewLineToEnvFile($key, $value): void
+     function addNewLineToEnvFile($key, $value): void
     {
         $envFilePath = base_path('.env');
         $currentEnvContent = file_get_contents($envFilePath);
@@ -486,4 +483,3 @@ class Helpify
 
         return $password;
     }
-}
