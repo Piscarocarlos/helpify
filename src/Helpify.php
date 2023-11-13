@@ -2,6 +2,7 @@
 
 namespace Piscarocarlos\Helpify;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -431,7 +432,7 @@ class Helpify
      *
      * @return bool True if the password is strong, otherwise false.
      */
-    function isStrongPassword($password, $minLength = 8, $requireUppercase = true, $requireNumbers = true, $requireSymbols = true)
+    public function isStrongPassword($password, $minLength = 8, $requireUppercase = true, $requireNumbers = true, $requireSymbols = true)
     {
         // Check minimum length
         if (strlen($password) < $minLength) {
@@ -470,7 +471,7 @@ class Helpify
      *
      * @return string The generated password.
      */
-    function generateStrongPassword($length = 12, $useUppercase = true, $useNumbers = true, $useSymbols = true)
+    public function generateStrongPassword($length = 12, $useUppercase = true, $useNumbers = true, $useSymbols = true)
     {
         $characters = 'abcdefghijklmnopqrstuvwxyz';
         $characters .= $useUppercase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '';
@@ -485,5 +486,29 @@ class Helpify
         }
 
         return $password;
+    }
+
+    /**
+     * Count the occurrences of a specific value in an array or a collection.
+     *
+     * @param array|Collection $data  The input array or collection.
+     * @param mixed            $value The value to count occurrences for.
+     *
+     * @return int The count of occurrences for the specified value.
+     */
+    public function countOccurrencesOfValue($data, $value)
+    {
+        if ($data instanceof Collection) {
+            // If the input is a collection
+            return $data->filter(function ($item) use ($value) {
+                return $item === $value;
+            })->count();
+        } elseif (is_array($data)) {
+            // If the input is an array
+            return array_count_values($data)[$value] ?? 0;
+        } else {
+            // Invalid input type
+            throw new \InvalidArgumentException('Input must be an array or a Collection.');
+        }
     }
 }
