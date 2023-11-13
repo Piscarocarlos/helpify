@@ -14,7 +14,7 @@ class Helpify
      * @param string $url The URL to shorten.
      * @return string The shortened URL.
      */
-    public function shorten(string $url): string
+    public function short_url(string $url): string
     {
         $contextOptions = [
             "ssl" => [
